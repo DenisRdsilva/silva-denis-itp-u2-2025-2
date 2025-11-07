@@ -2,10 +2,17 @@
 #include <string.h>
 
 int main() {
-    int quantidadePilotos;
+    int quantidadePilotos = 21;
 
-    printf("Digite a quantidade de pilotos: "); // Solicita a quantidade de pilotos
-    scanf("%d", &quantidadePilotos); 
+    while (quantidadePilotos > 20) {
+        printf("Digite a quantidade de pilotos: "); // Solicita a quantidade de pilotos
+        scanf("%d", &quantidadePilotos);
+        if (quantidadePilotos < 20) {
+            break;
+        } else {
+            printf("Valor acima de 20. Tente novamente.\n");
+        }
+    }
 
     int ordemPartida[quantidadePilotos];
     int ordemChegada[quantidadePilotos];
