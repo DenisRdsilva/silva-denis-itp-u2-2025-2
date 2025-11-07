@@ -1,24 +1,36 @@
 #include <stdio.h>
+#include <string.h>
 
 int main() {
-    char meses[12] = {
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    char meses[12][20] = {
+        "Janeiro", "Fevereiro", "Março", "Abril",
+        "Maio", "Junho", "Julho", "Agosto",
+        "Setembro", "Outubro", "Novembro", "Dezembro"
     };
 
-    int qntChuva[12];
+    int chuva[12];
 
     for (int i = 0; i < 12; i++) {
-        printf("Digite a quantidade de dias de chuva em %s: ", meses[i]);
-        scanf("%d", &qntChuva[i]);
+        scanf("%d", &chuva[i]);
+    }
+
+    for (int i = 0; i < 12 - 1; i++) {
+        for (int j = 0; j < 12 - i - 1; j++) {
+            if (chuva[j] < chuva[j + 1]) {
+                int temp = chuva[j];
+                chuva[j] = chuva[j + 1];
+                chuva[j + 1] = temp;
+
+                char tempMes[20];
+                strcpy(tempMes, meses[j]);
+                strcpy(meses[j], meses[j + 1]);
+                strcpy(meses[j + 1], tempMes);
+            }
+        }
     }
 
     for (int i = 0; i < 12; i++) {
-        int maiorQntChuva = -1;
-        if (qntChuva[i] > maiorQntChuva) {
-            maiorQntChuva = qntChuva[i];
-        }
-        printf("O maior número de dias de chuva em %s foi: %d\n", meses[i], maiorQntChuva);
+        printf("%s %d\n", meses[i], chuva[i]);
     }
 
     return 0;
