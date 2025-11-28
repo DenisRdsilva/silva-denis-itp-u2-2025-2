@@ -6,9 +6,9 @@ int escolherOperacao()
 
     do
     { // Só prossegue se o usuário escolher uma opção válida
-        printf("Escolha a operação:\n1 - Soma\n2 - Subtração\n3 - Multiplicação\n4 - Determinante\n");
+        printf("Escolha a operação:\n1 - Soma\n2 - Subtração\n3 - Multiplicação\n4 - Determinante\n5 - Inversa\n");
         scanf("%d", &operacao);
-    } while (operacao < 1 || operacao > 4);
+    } while (operacao < 1 || operacao > 5);
 
     return operacao;
 }
@@ -43,7 +43,7 @@ int main()
 
         do
         {
-            printf("Deseja: 1 - Reiniciar ou 2 - Encerrar?\n");
+            printf("Deseja:\n1 - Reiniciar\n2 - Encerrar?\n");
             scanf("%d", &escolha);
 
             if (escolha == 1)
@@ -53,7 +53,7 @@ int main()
             }
             else if (escolha == 2)
             {
-                return; // encerra o programa 
+                return; // encerra o programa
             }
             else
             {
@@ -82,6 +82,25 @@ int main()
             for (int j = 0; j < colunas; j++)
             {
                 printf("%d", matriz[i][j]);
+                if (j < colunas - 1)
+                {
+                    printf(" ");
+                }
+                if (j == colunas - 1)
+                {
+                    printf("\n");
+                }
+            }
+        }
+    }
+
+    void imprimirMatrizFloat(int linhas, int colunas, float matriz[linhas][colunas])
+    {
+        for (int i = 0; i < linhas; i++)
+        {
+            for (int j = 0; j < colunas; j++)
+            {
+                printf("%.2f", matriz[i][j]);
                 if (j < colunas - 1)
                 {
                     printf(" ");
@@ -144,7 +163,7 @@ int main()
             if (i == linhaRemover) // remove a linha fixada na submatriz, que será sempre a primeira
                 continue;
             colunasSubMatriz = 0;
-            for (int j = 0; j < tamanho; j++) 
+            for (int j = 0; j < tamanho; j++)
             {
                 if (j == colunaRemover) // remove a coluna fixada na submatriz, que será cada uma das colunas por vez
                     continue;
@@ -170,7 +189,6 @@ int main()
             criarSubmatriz(tamanho, matriz, sub, 0, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
 
             // printf("coluna removida: %d -> submatriz criada: %dx%d:\n", j + 1, tamanho - 1, tamanho - 1); //para debug
-            imprimirMatriz(tamanho - 1, tamanho - 1, sub);
 
             int subDet = determinante(tamanho - 1, sub); /* determinante da submatriz que tem ordem tamanho-1 */
             int sinal = (j % 2 == 0) ? 1 : -1;
@@ -181,17 +199,54 @@ int main()
         return det;
     }
 
+    int inversa(int tamanho, int matriz[tamanho][tamanho])
+    {
+        int det = determinante(tamanho, matriz);
+        if (det == 0)
+        {
+            printf("Determinante é zero, logo a matriz não tem inversa.\n");
+            return 0;
+        }
+        else
+        {
+            int cofatores[tamanho][tamanho];
+            int adjunta[tamanho][tamanho];
+            float inversa[tamanho][tamanho];
+            int sub[tamanho - 1][tamanho - 1];
+
+            for (int i = 0; i < tamanho; i++)
+            {
+                for (int j = 0; j < tamanho; j++)
+                {
+                    criarSubmatriz(tamanho, matriz, sub, i, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
+
+                    int subDet = determinante(tamanho - 1, sub); // determinante da submatriz que tem ordem tamanho-1
+                    int sinal = ((i + j) % 2 == 0) ? 1 : -1;
+
+                    cofatores[i][j] = sinal * subDet;    // calcula a matriz de cofatores
+                    adjunta[j][i] = cofatores[i][j];     // a adjunta é a transposta da matriz de cofatores
+                    inversa[i][j] = adjunta[j][i] / det; // calcula a inversa dividindo cada elemento da adjunta pelo determinante
+                }
+            }
+            imprimirMatrizFloat(tamanho, tamanho, inversa);
+        }
+    }
+
     int matriz1[linhas][colunas];
     criarMatriz(linhas, colunas, matriz1, 1);
 
-    if (operacao != 4) // se a operação não for determinante
+    if (operacao < 4) // se a operação não for determinante ou inversa
     {
         int matriz2[linhas][colunas];
         criarMatriz(linhas, colunas, matriz2, 2);
 
         operacaoMatrizes(linhas, colunas, matriz1, matriz2);
     }
-    else
+    else if (operacao == 5) // se a operação for inversa
+    {
+        inversa(linhas, matriz1);
+    }
+    else if (operacao == 4) // se a operação for determinante
     {
         int det = determinante(linhas, matriz1);
         printf("Determinante: %d\n", det);
