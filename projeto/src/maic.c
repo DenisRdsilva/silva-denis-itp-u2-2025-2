@@ -17,13 +17,17 @@ int inserirLinhasOuColunas(int tipo)
 { // função que insere o número de linhas ou colunas
     int numero;
 
-    if (tipo)
+    if (tipo == 0)
     {
-        printf("Insira o número de colunas das matrizes: ");
+        printf("Insira o número de linha(s) das matriz(es): ");
     }
-    else
+    else if (tipo == 1)
     {
-        printf("Insira o número de linhas das matrizes: ");
+        printf("Insira o número de coluna(s) das matriz(es): ");
+    }
+    else if (tipo == 2)
+    {
+        printf("Insira o tamanho da matriz: ");
     }
 
     scanf("%d", &numero);
@@ -31,11 +35,27 @@ int inserirLinhasOuColunas(int tipo)
     return numero;
 }
 
+typedef enum
+{
+    tipoINT,
+    tipoFLOAT
+} TipoMatriz;
+
 int main()
 {
     int operacao = escolherOperacao();
-    int linhas = inserirLinhasOuColunas(0);
-    int colunas = inserirLinhasOuColunas(1);
+    int linhas, colunas;
+
+    if (operacao > 2)
+    {
+        linhas = inserirLinhasOuColunas(2);
+        colunas = linhas;
+    }
+    else
+    {
+        linhas = inserirLinhasOuColunas(0);
+        colunas = inserirLinhasOuColunas(1);
+    }
 
     void reiniciarOuEncerrar()
     {
@@ -75,45 +95,31 @@ int main()
         }
     }
 
-    void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
-    { // função que imprime a matriz
-        for (int i = 0; i < linhas; i++)
-        {
-            for (int j = 0; j < colunas; j++)
-            {
-                printf("%d", matriz[i][j]);
-                if (j < colunas - 1)
-                {
-                    printf(" ");
-                }
-                if (j == colunas - 1)
-                {
-                    printf("\n");
-                }
-            }
-        }
-    }
-
-    void imprimirMatrizFloat(int linhas, int colunas, float matriz[linhas][colunas])
+    void imprimirMatriz(int linhas, int colunas, void *matriz, TipoMatriz tipo) // função que imprime a matriz, recebe um ponteiro genérico e aceita tanto matrizes do tipo int e do tipo float
     {
         for (int i = 0; i < linhas; i++)
         {
             for (int j = 0; j < colunas; j++)
             {
-                printf("%.2f", matriz[i][j]);
+                if (tipo == tipoINT)
+                {
+                    int *matrizInt = (int *)matriz;
+                    printf("%d", matrizInt[i * colunas + j]);
+                }
+                else if (tipo == tipoFLOAT)
+                {
+                    float *matrizFloat = (float *)matriz;
+                    printf("%.2f", matrizFloat[i * colunas + j]);
+                }
+
                 if (j < colunas - 1)
-                {
                     printf(" ");
-                }
-                if (j == colunas - 1)
-                {
-                    printf("\n");
-                }
             }
+            printf("\n");
         }
     }
 
-    void operacaoMatrizes(int linhas, int colunas, int matriz1[linhas][colunas], int matriz2[linhas][colunas])
+    void operacaoComDuasMatrizes(int linhas, int colunas, int matriz1[linhas][colunas], int matriz2[linhas][colunas])
     {
         int resultado[linhas][colunas];
 
@@ -151,10 +157,10 @@ int main()
                 }
             }
         }
-        imprimirMatriz(linhas, colunas, resultado);
+        imprimirMatriz(linhas, colunas, resultado, tipoINT);
     }
 
-    void criarSubmatriz(int tamanho, int matriz[tamanho][tamanho], int sub[tamanho - 1][tamanho - 1],
+    void criarSubMatriz(int tamanho, int matriz[tamanho][tamanho], int sub[tamanho - 1][tamanho - 1],
                         int linhaRemover, int colunaRemover) // função para criar as submatrizes usadas para o cálculo do determinante
     {
         int linhasSubMatriz = 0, colunasSubMatriz = 0;
@@ -180,13 +186,14 @@ int main()
             return matriz[0][0];
 
         if (tamanho == 2) // determinante de matriz 2x2
-            return matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0];
+            return ((matriz[0][0] * matriz[1][1]) - (matriz[0][1] * matriz[1][0]));
 
         int det = 0; // para qualquer matriz de ordem maior que 2
         int sub[tamanho - 1][tamanho - 1];
+
         for (int j = 0; j < tamanho; j++)
         {
-            criarSubmatriz(tamanho, matriz, sub, 0, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
+            criarSubMatriz(tamanho, matriz, sub, 0, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
 
             // printf("coluna removida: %d -> submatriz criada: %dx%d:\n", j + 1, tamanho - 1, tamanho - 1); //para debug
 
@@ -218,17 +225,17 @@ int main()
             {
                 for (int j = 0; j < tamanho; j++)
                 {
-                    criarSubmatriz(tamanho, matriz, sub, i, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
+                    criarSubMatriz(tamanho, matriz, sub, i, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
 
                     int subDet = determinante(tamanho - 1, sub); // determinante da submatriz que tem ordem tamanho-1
                     int sinal = ((i + j) % 2 == 0) ? 1 : -1;
 
                     cofatores[i][j] = sinal * subDet;    // calcula a matriz de cofatores
                     adjunta[j][i] = cofatores[i][j];     // a adjunta é a transposta da matriz de cofatores
-                    inversa[i][j] = adjunta[j][i] / det; // calcula a inversa dividindo cada elemento da adjunta pelo determinante
+                    inversa[j][i] = adjunta[j][i] / det; // calcula a inversa dividindo cada elemento da adjunta pelo determinante
                 }
             }
-            imprimirMatrizFloat(tamanho, tamanho, inversa);
+            imprimirMatriz(tamanho, tamanho, inversa, tipoFLOAT);
         }
     }
 
@@ -240,7 +247,7 @@ int main()
         int matriz2[linhas][colunas];
         criarMatriz(linhas, colunas, matriz2, 2);
 
-        operacaoMatrizes(linhas, colunas, matriz1, matriz2);
+        operacaoComDuasMatrizes(linhas, colunas, matriz1, matriz2);
     }
     else if (operacao == 5) // se a operação for inversa
     {
