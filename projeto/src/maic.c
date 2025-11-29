@@ -1,14 +1,19 @@
 #include <stdio.h>
 
+// Legenda de comentários:
+//* Indica que a função existia, mas foi modificada *
+//**  Indica que a função é nova **
+
 int escolherOperacao()
 { // função que escolhe a operação a ser feita com as matrizes
     int operacao;
 
-    do
+    do //* Foram adicionadas as opções de Multiplicação, determinante e Inversa
     { // Só prossegue se o usuário escolher uma opção válida
         printf("Escolha a operação:\n1 - Soma\n2 - Subtração\n3 - Multiplicação\n4 - Determinante\n5 - Inversa\n");
         scanf("%d", &operacao);
     } while (operacao < 1 || operacao > 5);
+    
 
     return operacao;
 }
@@ -25,7 +30,7 @@ int inserirLinhasOuColunas(int tipo)
     {
         printf("Insira o número de coluna(s) das matriz(es): ");
     }
-    else if (tipo == 2)
+    else if (tipo == 2) //* Adicionado para as operações que precisam de matrizes quadradas *
     {
         printf("Insira o tamanho da matriz: ");
     }
@@ -43,10 +48,10 @@ typedef enum
 
 int main()
 {
-    int operacao = escolherOperacao();
+    int operacao = escolherOperacao(); // Armazena o número da operação escolhida
     int linhas, colunas;
 
-    if (operacao > 2)
+    if (operacao > 2) //* As operações com número maior que 2 só operam com matrizes quadradas *
     {
         linhas = inserirLinhasOuColunas(2);
         colunas = linhas;
@@ -57,7 +62,7 @@ int main()
         colunas = inserirLinhasOuColunas(1);
     }
 
-    void reiniciarOuEncerrar()
+    void reiniciarOuEncerrar() //** Criada função para perguntar ao usuário se ele quer recomeçar ou encerrar o programa **
     {
         int escolha;
 
@@ -95,7 +100,7 @@ int main()
         }
     }
 
-    void imprimirMatriz(int linhas, int colunas, void *matriz, TipoMatriz tipo) // função que imprime a matriz, recebe um ponteiro genérico e aceita tanto matrizes do tipo int e do tipo float
+    void imprimirMatriz(int linhas, int colunas, void *matriz, TipoMatriz tipo) //* Função que imprime a matriz, e foi adaptada para receber um ponteiro genérico e aceitar tanto matrizes do tipo int e do tipo float *
     {
         for (int i = 0; i < linhas; i++)
         {
@@ -119,11 +124,11 @@ int main()
         }
     }
 
-    void operacaoComDuasMatrizes(int linhas, int colunas, int matriz1[linhas][colunas], int matriz2[linhas][colunas])
+    void operacaoComDuasMatrizes(int linhas, int colunas, int matriz1[linhas][colunas], int matriz2[linhas][colunas]) //* Função modificada que agora engloba apenas as operações que envolvem duas matrizes *
     {
         int resultado[linhas][colunas];
 
-        if (operacao == 1)
+        if (operacao == 1) // soma
         {
             for (int i = 0; i < linhas; i++)
             {
@@ -133,7 +138,7 @@ int main()
                 }
             }
         }
-        else if (operacao == 2)
+        else if (operacao == 2) // subtração
         {
             for (int i = 0; i < linhas; i++)
             {
@@ -143,8 +148,8 @@ int main()
                 }
             }
         }
-        else if (operacao == 3)
-        {
+        else if (operacao == 3) // multiplicação 
+        { //** Adicionado trecho com 3 loops alinhados para fazer a multiplicação das matrizes *
             for (int i = 0; i < linhas; i++)
             {
                 for (int j = 0; j < colunas; j++)
@@ -160,7 +165,7 @@ int main()
         imprimirMatriz(linhas, colunas, resultado, tipoINT);
     }
 
-    void criarSubMatriz(int tamanho, int matriz[tamanho][tamanho], int sub[tamanho - 1][tamanho - 1],
+    void criarSubMatriz(int tamanho, int matriz[tamanho][tamanho], int sub[tamanho - 1][tamanho - 1], //** Função nova usada para criar as submatrizes usadas no cálculo do determinante e da inversa *
                         int linhaRemover, int colunaRemover) // função para criar as submatrizes usadas para o cálculo do determinante
     {
         int linhasSubMatriz = 0, colunasSubMatriz = 0;
@@ -180,7 +185,7 @@ int main()
         }
     }
 
-    int determinante(int tamanho, int matriz[tamanho][tamanho]) // função para calcular o determinante da matriz segundo o Teorema de Laplace, buscando sempre reduzir a ordem até o formato 2x2
+    int determinante(int tamanho, int matriz[tamanho][tamanho]) //**  Função para calcular o determinante da matriz segundo o Teorema de Laplace, buscando sempre reduzir a ordem até o formato 2x2 **
     {
         if (tamanho == 1) // determinante de matriz 1x1 (elemento único)
             return matriz[0][0];
@@ -195,8 +200,6 @@ int main()
         {
             criarSubMatriz(tamanho, matriz, sub, 0, j); // cria a submatriz a partir da matriz principal, onde está fixada a primeira linha, e as colunas vão sendo iteradas
 
-            // printf("coluna removida: %d -> submatriz criada: %dx%d:\n", j + 1, tamanho - 1, tamanho - 1); //para debug
-
             int subDet = determinante(tamanho - 1, sub); /* determinante da submatriz que tem ordem tamanho-1 */
             int sinal = (j % 2 == 0) ? 1 : -1;
 
@@ -206,7 +209,7 @@ int main()
         return det;
     }
 
-    int inversa(int tamanho, int matriz[tamanho][tamanho])
+    int inversa(int tamanho, int matriz[tamanho][tamanho]) //** Função para calcular a inversa da matriz usando a matriz de cofatores, matriz adjunta e o determinante, retorna 0 se o determinante for 0, encerrando a função **
     {
         int det = determinante(tamanho, matriz);
         if (det == 0)
@@ -216,9 +219,9 @@ int main()
         }
         else
         {
-            int cofatores[tamanho][tamanho];
-            int adjunta[tamanho][tamanho];
-            float inversa[tamanho][tamanho];
+            int cofatores[tamanho][tamanho]; // matriz de cofatores
+            int adjunta[tamanho][tamanho]; // matriz adjunta que é a transposta da matriz de cofatores
+            float inversa[tamanho][tamanho]; // matriz inversa que é a adjunta dividida pelo determinante
             int sub[tamanho - 1][tamanho - 1];
 
             for (int i = 0; i < tamanho; i++)
@@ -242,20 +245,20 @@ int main()
     int matriz1[linhas][colunas];
     criarMatriz(linhas, colunas, matriz1, 1);
 
-    if (operacao < 4) // se a operação não for determinante ou inversa
+    if (operacao < 4) //* Condicional foi modificada para tratar as novas operações *
     {
         int matriz2[linhas][colunas];
         criarMatriz(linhas, colunas, matriz2, 2);
 
         operacaoComDuasMatrizes(linhas, colunas, matriz1, matriz2);
     }
-    else if (operacao == 5) // se a operação for inversa
+    else if (operacao == 5) //* se a operação for inversa *
     {
         inversa(linhas, matriz1);
     }
-    else if (operacao == 4) // se a operação for determinante
+    else if (operacao == 4) //* se a operação for determinante *
     {
-        int det = determinante(linhas, matriz1);
+        int det = determinante(linhas, matriz1); // armazena o valor do determinante
         printf("Determinante: %d\n", det);
     }
 

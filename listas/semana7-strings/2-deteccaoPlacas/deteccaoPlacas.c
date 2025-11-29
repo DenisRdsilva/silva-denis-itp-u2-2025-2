@@ -11,7 +11,7 @@ int main()
     // Brasil - LLL-AAAA
     // Mercosul - LLLALAA
 
-    int validarLetra(char letra)
+    int validarLetra(char letra) // Verifica se a letra é maiúscula
     {
         if (letra >= 'A' && letra <= 'Z')
         {
@@ -20,7 +20,7 @@ int main()
         return 0;
     }
 
-    int validarNumero(char numero)
+    int validarNumero(char numero) // Verifica se o caractere é um número
     {
         if (numero >= '0' && numero <= '9')
         {
@@ -29,7 +29,7 @@ int main()
         return 0;
     }
 
-    int validarPlacaBrasileira(char *placa)
+    int validarPlacaBrasileira() // Valida se a placa está no formato brasileiro
     {
         for (int i = 0; i < 3; i++)
         {
@@ -55,7 +55,7 @@ int main()
         return 1;
     }
 
-    int validarPlacaMercosul(char *placa)
+    int validarPlacaMercosul() //Valida se a placa está no formato mercosul
     {
         for (int i = 0; i < 3; i++)
         {
@@ -81,11 +81,11 @@ int main()
         return 1;
     }
 
-    if (validarPlacaBrasileira(placa))
+    if (validarPlacaBrasileira()) //Imprime o tipo de placa, ou se é inválida
     {
         printf("brasileiro");
     }
-    else if (validarPlacaMercosul(placa))
+    else if (validarPlacaMercosul())
     {
         printf("mercosul");
     }
